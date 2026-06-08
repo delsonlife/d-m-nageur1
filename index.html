@@ -80,7 +80,6 @@
     .price-featured{background:linear-gradient(145deg,var(--n800),var(--n700));color:#fff;transform:scale(1.04);box-shadow:0 20px 60px rgba(14,38,84,.3)}
     .star{color:#fbbf24}
     .testi-card{border-left:4px solid var(--orange)}
-    .assurance-badge{padding:10px 20px;background:#fff;border:1px solid #e4ecf7;border-radius:12px;font-weight:700;font-size:14px;color:var(--n800);box-shadow:0 2px 10px rgba(0,0,0,.06)}
     .reveal{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease}
     .reveal.visible{opacity:1;transform:none}
     @keyframes fadeUp{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
@@ -94,6 +93,19 @@
     .tag-orange{background:#fff3e8;color:#c2440a}
     .tag-navy{background:var(--n50);color:var(--n700)}
     .tag-amber{background:#fffbeb;color:#92400e}
+    /* AUTOCOMPLETE */
+    .ac-wrap{position:relative}
+    .ac-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1.5px solid var(--n200);border-radius:12px;box-shadow:0 8px 28px rgba(14,38,84,.13);z-index:200;overflow:hidden;max-height:220px;overflow-y:auto}
+    .ac-item{padding:11px 16px;font-size:13px;color:var(--n800);cursor:pointer;display:flex;align-items:flex-start;gap:10px;transition:background .15s}
+    .ac-item:hover,.ac-item.focused{background:var(--n50)}
+    .ac-item .ac-icon{font-size:15px;margin-top:1px;flex-shrink:0;color:var(--n400)}
+    .ac-item .ac-main{font-weight:600;color:var(--n800)}
+    .ac-item .ac-sub{font-size:11px;color:#8899b5;margin-top:1px}
+    .ac-loading{padding:14px 16px;font-size:13px;color:#8899b5;text-align:center}
+    /* WHY US */
+    .why-card{background:#fff;border:1px solid #e4ecf7;border-radius:18px;padding:28px 24px;transition:transform .2s,box-shadow .2s}
+    .why-card:hover{transform:translateY(-4px);box-shadow:0 12px 40px rgba(14,38,84,.1)}
+    .why-icon{width:52px;height:52px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px}
     @media(max-width:1023px){.price-featured{transform:none}.price-panel{position:static}}
     @media(max-width:640px){.date-time-grid{grid-template-columns:1fr}}
   </style>
@@ -181,28 +193,50 @@
         <!-- Panel 1 -->
         <div class="wizard-panel active" id="panel1">
           <h3 style="font-size:26px;font-weight:600;color:var(--n800);margin-bottom:6px;">Adresse de départ</h3>
-          <p style="color:#6b7a99;font-size:13px;margin-bottom:22px;">D'où partons-nous ?</p>
-          <div style="margin-bottom:16px;">
-            <label class="field-label">Ville de départ</label>
-            <input id="villeDepart" class="field-input" type="text" placeholder="Ex : Paris 75011" />
+          <p style="color:#6b7a99;font-size:13px;margin-bottom:22px;">Saisissez l'adresse complète d'où nous partons.</p>
+          <div style="margin-bottom:20px;">
+            <label class="field-label">Adresse complète de départ</label>
+            <div class="ac-wrap">
+              <input id="villeDepart" class="field-input" type="text" placeholder="Ex : 12 rue de Rivoli, Paris 75001" autocomplete="off" />
+              <div class="ac-dropdown" id="acDep" style="display:none;"></div>
+            </div>
           </div>
-          <div style="margin-bottom:16px;">
-            <label class="field-label">Distance estimée (km)</label>
-            <input id="kmInput" class="field-input" type="number" min="1" placeholder="Ex : 30" />
-            <p style="font-size:11px;color:#8899b5;margin-top:5px;">1 km = 1 € · Basé sur votre trajet réel</p>
+          <!-- km badge — hidden, filled automatically -->
+          <div id="kmBadgeDep" style="display:none;background:var(--n50);border:1px solid var(--n100);border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--n600);font-weight:600;">
+            📍 Adresse sélectionnée
           </div>
           <div style="display:flex;justify-content:flex-end;margin-top:8px;">
-            <button class="btn-navy" style="padding:12px 28px;font-size:14px;" onclick="goNext(1)">Suivant →</button>
+            <button class="btn-navy" style="padding:12px 28px;font-size:14px;" onclick="goNext(1)">Continuer →</button>
           </div>
         </div>
 
         <!-- Panel 2 -->
         <div class="wizard-panel" id="panel2">
           <h3 style="font-size:26px;font-weight:600;color:var(--n800);margin-bottom:6px;">Adresse d'arrivée</h3>
-          <p style="color:#6b7a99;font-size:13px;margin-bottom:22px;">Où livrons-nous ?</p>
-          <div style="margin-bottom:16px;">
-            <label class="field-label">Ville d'arrivée</label>
-            <input id="villeArrivee" class="field-input" type="text" placeholder="Ex : Lyon 69001" />
+          <p style="color:#6b7a99;font-size:13px;margin-bottom:22px;">Saisissez l'adresse complète où nous livrons.</p>
+          <div style="margin-bottom:20px;">
+            <label class="field-label">Adresse complète d'arrivée</label>
+            <div class="ac-wrap">
+              <input id="villeArrivee" class="field-input" type="text" placeholder="Ex : 8 avenue de la Liberté, Lyon 69003" autocomplete="off" />
+              <div class="ac-dropdown" id="acArr" style="display:none;"></div>
+            </div>
+          </div>
+          <!-- Distance badge — shown after both addresses selected -->
+          <div id="kmBadge" style="display:none;background:linear-gradient(135deg,var(--n50),#fff);border:1.5px solid var(--n200);border-radius:14px;padding:14px 16px;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <span style="font-size:22px;">🗺️</span>
+                <div>
+                  <p style="font-size:11px;color:var(--n600);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px;">Distance calculée</p>
+                  <p id="kmBadgeText" style="font-size:20px;font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--n800);">— km</p>
+                </div>
+              </div>
+              <div style="text-align:right;">
+                <p style="font-size:11px;color:#8899b5;margin-bottom:2px;">Coût trajet</p>
+                <p id="kmCostText" style="font-size:16px;font-weight:700;color:var(--orange);">— €</p>
+              </div>
+            </div>
+            <p id="kmLoadingText" style="font-size:11px;color:#8899b5;margin-top:8px;display:none;">⏳ Calcul du trajet en cours…</p>
           </div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
             <button class="btn-ghost" onclick="goPrev(2)">← Retour</button>
@@ -372,61 +406,52 @@
   </div>
 </section>
 
-<!-- FORMULES -->
-<section style="background:#fff;padding:80px 20px;">
-  <div style="max-width:1060px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:52px;" class="reveal">
-      <span class="section-tag tag-navy">Nos formules</span>
-      <h2 style="font-size:clamp(28px,5vw,48px);font-weight:600;color:var(--n800);margin-bottom:10px;">Transparence tarifaire</h2>
-      <p style="color:#6b7a99;font-size:15px;">Choisissez la formule adaptée à votre budget.</p>
+<!-- POURQUOI NOUS CHOISIR -->
+<section id="pourquoi" style="background:#fff;padding:80px 20px;">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div style="text-align:center;margin-bottom:56px;" class="reveal">
+      <span class="section-tag tag-navy">Nos engagements</span>
+      <h2 style="font-size:clamp(28px,5vw,50px);font-weight:600;color:var(--n800);margin-bottom:12px;">Pourquoi choisir CapMoves ?</h2>
+      <p style="color:#6b7a99;font-size:15px;max-width:500px;margin:0 auto;">Chaque détail compte quand on déménage. Voici ce qui nous distingue.</p>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;align-items:center;">
-      <div class="card reveal" style="padding:32px 28px;">
-        <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8899b5;margin-bottom:8px;">Formule</p>
-        <h3 style="font-size:32px;font-weight:600;color:var(--n800);margin-bottom:6px;">Éco</h3>
-        <p style="color:#8899b5;font-size:13px;margin-bottom:20px;">L'essentiel, au meilleur prix.</p>
-        <p style="font-size:13px;color:#8899b5;margin-bottom:4px;">À partir de</p>
-        <p style="font-size:46px;font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--amber);line-height:1;margin-bottom:20px;">350 €</p>
-        <ul style="list-style:none;margin-bottom:28px;font-size:13px;color:#4a5568;">
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Transport sécurisé</li>
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Équipe 2 personnes</li>
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Assurance de base incluse</li>
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;color:#c8d0dc;"><span>✗</span>Emballage non inclus</li>
-          <li style="padding:6px 0;display:flex;gap:8px;color:#c8d0dc;"><span>✗</span>Montage/démontage</li>
-        </ul>
-        <a href="#estimation" class="btn-navy" style="display:block;text-align:center;padding:12px;font-size:14px;text-decoration:none;border-radius:50px;">Choisir Éco</a>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;">
+
+      <div class="why-card reveal">
+        <div class="why-icon" style="background:#fff3e8;">🚀</div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n800);margin-bottom:8px;">Rapidité & ponctualité</h3>
+        <p style="font-size:13px;color:#6b7a99;line-height:1.7;">Nos équipes arrivent à l'heure, toujours. Nous respectons les créneaux convenus et vous tenons informé en temps réel du déroulement de votre déménagement.</p>
       </div>
-      <div class="price-featured reveal" style="border-radius:20px;padding:32px 28px;">
-        <div style="background:#fbbf24;color:var(--n800);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:4px 12px;border-radius:99px;display:inline-block;margin-bottom:10px;">⭐ Le plus populaire</div>
-        <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(176,198,230,.7);margin-bottom:8px;">Formule</p>
-        <h3 style="font-size:32px;font-weight:600;color:#fff;margin-bottom:6px;">Standard</h3>
-        <p style="color:rgba(176,198,230,.7);font-size:13px;margin-bottom:20px;">Le rapport qualité-prix idéal.</p>
-        <p style="font-size:13px;color:rgba(176,198,230,.6);margin-bottom:4px;">À partir de</p>
-        <p style="font-size:46px;font-family:'Cormorant Garamond',serif;font-weight:700;color:#fbbf24;line-height:1;margin-bottom:20px;">690 €</p>
-        <ul style="list-style:none;margin-bottom:28px;font-size:13px;color:rgba(176,198,230,.9);">
-          <li style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;"><span style="color:#fbbf24;font-weight:700;">✓</span>Transport sécurisé</li>
-          <li style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;"><span style="color:#fbbf24;font-weight:700;">✓</span>Équipe 3 personnes</li>
-          <li style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;"><span style="color:#fbbf24;font-weight:700;">✓</span>Assurance tous risques</li>
-          <li style="padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;gap:8px;"><span style="color:#fbbf24;font-weight:700;">✓</span>Emballage inclus</li>
-          <li style="padding:6px 0;display:flex;gap:8px;color:rgba(176,198,230,.4);"><span>✗</span>Montage/démontage</li>
-        </ul>
-        <a href="#estimation" style="display:block;text-align:center;padding:12px;font-size:14px;font-family:'Montserrat',sans-serif;font-weight:700;text-decoration:none;background:#fbbf24;color:var(--n800);border-radius:50px;">Choisir Standard</a>
+
+      <div class="why-card reveal">
+        <div class="why-icon" style="background:#f0f4fa;">🛡️</div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n800);margin-bottom:8px;">Sécurité maximale</h3>
+        <p style="font-size:13px;color:#6b7a99;line-height:1.7;">Chaque objet est emballé, sanglé et transporté avec soin. Nous sommes assurés tous risques — vos affaires sont protégées du départ jusqu'à la livraison.</p>
       </div>
-      <div class="card reveal" style="padding:32px 28px;">
-        <p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#8899b5;margin-bottom:8px;">Formule</p>
-        <h3 style="font-size:32px;font-weight:600;color:var(--n800);margin-bottom:6px;">Confort</h3>
-        <p style="color:#8899b5;font-size:13px;margin-bottom:20px;">La sérénité totale, clé en main.</p>
-        <p style="font-size:13px;color:#8899b5;margin-bottom:4px;">À partir de</p>
-        <p style="font-size:46px;font-family:'Cormorant Garamond',serif;font-weight:700;color:var(--amber);line-height:1;margin-bottom:20px;">1 200 €</p>
-        <ul style="list-style:none;margin-bottom:28px;font-size:13px;color:#4a5568;">
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Transport premium</li>
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Équipe 4 personnes</li>
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Assurance tous risques</li>
-          <li style="padding:6px 0;border-bottom:1px solid #f1f5fb;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Emballage &amp; déballage</li>
-          <li style="padding:6px 0;display:flex;gap:8px;"><span style="color:#22c55e;font-weight:700;">✓</span>Montage/démontage meubles</li>
-        </ul>
-        <a href="#estimation" class="btn-navy" style="display:block;text-align:center;padding:12px;font-size:14px;text-decoration:none;border-radius:50px;">Choisir Confort</a>
+
+      <div class="why-card reveal">
+        <div class="why-icon" style="background:#fffbeb;">💶</div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n800);margin-bottom:8px;">Prix fixe, sans surprise</h3>
+        <p style="font-size:13px;color:#6b7a99;line-height:1.7;">Le tarif calculé est celui que vous payez. Aucun frais caché, aucune majoration de dernière minute. Notre calculateur vous donne un prix ferme et définitif.</p>
       </div>
+
+      <div class="why-card reveal">
+        <div class="why-icon" style="background:#f0fdf4;">👷</div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n800);margin-bottom:8px;">Équipe professionnelle</h3>
+        <p style="font-size:13px;color:#6b7a99;line-height:1.7;">Nos déménageurs sont formés, expérimentés et passionnés. Ils traitent vos meubles comme les leurs — avec respect, méthode et bonne humeur.</p>
+      </div>
+
+      <div class="why-card reveal">
+        <div class="why-icon" style="background:#fdf4ff;">📞</div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n800);margin-bottom:8px;">Disponibles 7j/7</h3>
+        <p style="font-size:13px;color:#6b7a99;line-height:1.7;">Un conseiller vous répond en moins de 2h, même le week-end. Que ce soit pour un devis, un renseignement ou un ajustement de dernière minute, on est là.</p>
+      </div>
+
+      <div class="why-card reveal">
+        <div class="why-icon" style="background:#fff3e8;">🌿</div>
+        <h3 style="font-size:20px;font-weight:600;color:var(--n800);margin-bottom:8px;">Éco-responsable</h3>
+        <p style="font-size:13px;color:#6b7a99;line-height:1.7;">Nous optimisons chaque trajet pour réduire les émissions de CO₂. Nos camions récents respectent les normes Euro 6 et nous favorisons les tournées groupées.</p>
+      </div>
+
     </div>
   </div>
 </section>
@@ -434,17 +459,10 @@
 <!-- REASSURANCE -->
 <section style="background:linear-gradient(135deg,var(--n950),var(--n800));padding:72px 20px;">
   <div style="max-width:1000px;margin:0 auto;">
-    <div style="text-align:center;margin-bottom:44px;" class="reveal">
+    <div style="text-align:center;margin-bottom:52px;" class="reveal">
       <div style="display:flex;justify-content:center;gap:4px;margin-bottom:10px;"><span class="star" style="font-size:22px;">★</span><span class="star" style="font-size:22px;">★</span><span class="star" style="font-size:22px;">★</span><span class="star" style="font-size:22px;">★</span><span class="star" style="font-size:22px;">★</span></div>
       <p style="font-size:58px;font-family:'Cormorant Garamond',serif;font-weight:700;color:#fff;line-height:1;">4,9<span style="font-size:28px;color:rgba(176,198,230,.6);">/5</span></p>
       <p style="color:rgba(176,198,230,.7);font-size:13px;margin-top:4px;">Basé sur 312 avis Google vérifiés</p>
-    </div>
-    <div style="text-align:center;margin-bottom:44px;" class="reveal">
-      <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(176,198,230,.5);margin-bottom:16px;">Partenaires assureurs</p>
-      <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;">
-        <div class="assurance-badge">🛡️ AXA</div><div class="assurance-badge">🛡️ Allianz</div>
-        <div class="assurance-badge">🛡️ Generali</div><div class="assurance-badge">🛡️ MAIF</div>
-      </div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;max-width:640px;margin:0 auto;" class="reveal">
       <div style="text-align:center;"><p style="font-size:40px;font-family:'Cormorant Garamond',serif;font-weight:700;color:#fbbf24;">4 200+</p><p style="color:rgba(176,198,230,.7);font-size:13px;margin-top:4px;">Déménagements réalisés</p></div>
@@ -666,15 +684,15 @@ function showPanel(n){
 function goNext(from){
   if(from===1){
     const dep=document.getElementById('villeDepart').value.trim();
-    const km=parseInt(document.getElementById('kmInput').value)||0;
     if(!dep){document.getElementById('villeDepart').classList.add('error');return;}
     document.getElementById('villeDepart').classList.remove('error');
-    state.km=km;recalc();showPricePanel();
+    recalc();showPricePanel();
   }
   if(from===2){
     const arr=document.getElementById('villeArrivee').value.trim();
     if(!arr){document.getElementById('villeArrivee').classList.add('error');return;}
-    document.getElementById('villeArrivee').classList.remove('error');recalc();
+    document.getElementById('villeArrivee').classList.remove('error');
+    recalc();
   }
   showPanel(from+1);
 }
@@ -692,9 +710,12 @@ function submitQuote(){
   const arr=document.getElementById('villeArrivee').value;
   const date=document.getElementById('movingDate').value||'—';
   const time=document.getElementById('movingTime').value;
+  const kmVal=state.km>0?state.km+'km':'—';
   document.getElementById('successSummary').innerHTML=`
     <div style="font-size:10px;color:rgba(176,198,230,.6);font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px;">Récapitulatif</div>
-    <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);"><span style="color:rgba(176,198,230,.7);">Trajet</span><span style="font-weight:700;">${dep} → ${arr}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);"><span style="color:rgba(176,198,230,.7);">Départ</span><span style="font-weight:700;text-align:right;max-width:60%;font-size:12px;">${dep}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);"><span style="color:rgba(176,198,230,.7);">Arrivée</span><span style="font-weight:700;text-align:right;max-width:60%;font-size:12px;">${arr}</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);"><span style="color:rgba(176,198,230,.7);">Distance</span><span style="font-weight:700;">${kmVal}</span></div>
     <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);"><span style="color:rgba(176,198,230,.7);">Date &amp; heure</span><span style="font-weight:700;">${date} à ${time}</span></div>
     <div style="display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.1);"><span style="color:rgba(176,198,230,.7);">Client</span><span style="font-weight:700;">${nom}</span></div>
     <div style="display:flex;justify-content:space-between;font-size:16px;padding:10px 0 0;"><span style="color:rgba(176,198,230,.7);">Total estimé</span><span style="font-weight:700;color:#fbbf24;font-size:20px;">${total} €</span></div>`;
@@ -703,6 +724,182 @@ function submitQuote(){
   document.querySelectorAll('.wizard-panel').forEach(p=>p.style.display='none');
   document.getElementById('successScreen').style.display='block';
 }
+
+// ══════════════════════════════════════════════════════════
+// AUTOCOMPLETE — Photon API (Komoot, no key, full addresses)
+// ══════════════════════════════════════════════════════════
+const acState = {
+  dep: { timer:null, focusIdx:-1, lat:null, lon:null },
+  arr: { timer:null, focusIdx:-1, lat:null, lon:null },
+};
+
+function setupAutocomplete(inputId, dropId, side){
+  const inp  = document.getElementById(inputId);
+  const drop = document.getElementById(dropId);
+
+  inp.addEventListener('input', ()=>{
+    clearTimeout(acState[side].timer);
+    const q = inp.value.trim();
+    if(q.length < 3){ drop.style.display='none'; return; }
+    // Reset stored coords when user types again
+    acState[side].lat = null;
+    acState[side].lon = null;
+    drop.innerHTML='<div class="ac-loading">🔍 Recherche d\'adresses…</div>';
+    drop.style.display='block';
+    acState[side].timer = setTimeout(()=> fetchAddresses(q, drop, inp, side), 350);
+  });
+
+  inp.addEventListener('keydown', e=>{
+    const items = drop.querySelectorAll('.ac-item');
+    if(!items.length) return;
+    if(e.key==='ArrowDown'){
+      e.preventDefault();
+      acState[side].focusIdx = Math.min(acState[side].focusIdx+1, items.length-1);
+      highlightAC(items, side);
+    } else if(e.key==='ArrowUp'){
+      e.preventDefault();
+      acState[side].focusIdx = Math.max(acState[side].focusIdx-1, 0);
+      highlightAC(items, side);
+    } else if(e.key==='Enter' && acState[side].focusIdx >= 0){
+      e.preventDefault(); items[acState[side].focusIdx].click();
+    } else if(e.key==='Escape'){
+      drop.style.display='none';
+    }
+  });
+
+  document.addEventListener('click', e=>{
+    if(!inp.contains(e.target) && !drop.contains(e.target)) drop.style.display='none';
+  });
+}
+
+function highlightAC(items, side){
+  items.forEach((it,i)=> it.classList.toggle('focused', i===acState[side].focusIdx));
+}
+
+async function fetchAddresses(q, drop, inp, side){
+  try {
+    // Photon (Komoot) — free, no key, supports French addresses
+    const url = `https://photon.komoot.io/api/?q=${encodeURIComponent(q)}&limit=7&lang=fr&bbox=-5.5,41.0,10.0,51.5`;
+    const r = await fetch(url);
+    const data = await r.json();
+    const features = (data.features||[]).filter(f=>{
+      const c = f.properties.countrycode||'';
+      return ['fr','be','ch','lu'].includes(c.toLowerCase());
+    });
+
+    if(!features.length){
+      drop.innerHTML='<div class="ac-loading">Aucun résultat trouvé</div>';
+      return;
+    }
+
+    drop.innerHTML='';
+    acState[side].focusIdx = -1;
+
+    features.forEach(f=>{
+      const p = f.properties;
+      // Build a clean address label
+      const parts = [];
+      if(p.housenumber && p.street) parts.push(p.housenumber+' '+p.street);
+      else if(p.street) parts.push(p.street);
+      else if(p.name && p.name !== p.city) parts.push(p.name);
+
+      const city    = p.city || p.town || p.village || p.municipality || '';
+      const postcode = p.postcode || '';
+      const state   = p.state || '';
+
+      const mainLine = parts.length ? parts.join(', ') : (city || p.name || '');
+      const subParts = [];
+      if(postcode) subParts.push(postcode);
+      if(city && city !== mainLine) subParts.push(city);
+      if(state && state !== city) subParts.push(state);
+      const subLine = subParts.join(' ');
+
+      const fullLabel = subLine ? `${mainLine}, ${subLine}` : mainLine;
+      const [lon, lat] = f.geometry.coordinates;
+
+      const el = document.createElement('div');
+      el.className = 'ac-item';
+      el.innerHTML = `
+        <span class="ac-icon">${p.type==='house'||p.housenumber ? '🏠' : p.type==='street' ? '🛣️' : '📍'}</span>
+        <div>
+          <div class="ac-main">${mainLine}</div>
+          ${subLine ? `<div class="ac-sub">${subLine}</div>` : ''}
+        </div>`;
+
+      el.addEventListener('click', ()=>{
+        inp.value = fullLabel;
+        inp.classList.remove('error');
+        drop.style.display = 'none';
+        acState[side].focusIdx = -1;
+        acState[side].lat = lat;
+        acState[side].lon = lon;
+
+        // Show confirmation badge
+        if(side==='dep'){
+          const b = document.getElementById('kmBadgeDep');
+          b.style.display='block';
+          b.innerHTML=`<span style="color:var(--n600);font-size:13px;font-weight:600;">✅ ${mainLine}${subLine?' — '+subLine:''}</span>`;
+        }
+
+        // If both coords known → calculate route
+        if(acState.dep.lat && acState.arr.lat){
+          calculateRoute();
+        }
+      });
+      drop.appendChild(el);
+    });
+  } catch(err){
+    drop.innerHTML='<div class="ac-loading">Erreur réseau, réessayez…</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// ROUTING — OSRM (free, no key, real road distance)
+// ══════════════════════════════════════════════════════════
+async function calculateRoute(){
+  const badge       = document.getElementById('kmBadge');
+  const badgeText   = document.getElementById('kmBadgeText');
+  const badgeCost   = document.getElementById('kmCostText');
+  const loadingText = document.getElementById('kmLoadingText');
+
+  badge.style.display = 'block';
+  badgeText.textContent = '— km';
+  badgeCost.textContent = '— €';
+  loadingText.style.display = 'block';
+
+  try {
+    const {lon:lon1,lat:lat1} = acState.dep;
+    const {lon:lon2,lat:lat2} = acState.arr;
+    const url = `https://router.project-osrm.org/route/v1/driving/${lon1},${lat1};${lon2},${lat2}?overview=false`;
+    const r = await fetch(url);
+    const data = await r.json();
+
+    if(data.code==='Ok' && data.routes && data.routes[0]){
+      const distanceM = data.routes[0].distance;
+      const km = Math.round(distanceM / 1000);
+      state.km = km;
+      recalc();
+
+      badgeText.textContent = `${km} km`;
+      badgeCost.textContent = `+${km} €`;
+      loadingText.style.display = 'none';
+
+      // Also update route recap in step 5
+      const dep=document.getElementById('villeDepart').value;
+      const arr=document.getElementById('villeArrivee').value;
+      if(dep&&arr) document.getElementById('routeRecap5').textContent=dep.split(',')[0]+' → '+arr.split(',')[0];
+    } else {
+      loadingText.textContent = '⚠️ Impossible de calculer le trajet';
+    }
+  } catch(e){
+    loadingText.textContent = '⚠️ Erreur de calcul — vérifiez les adresses';
+    loadingText.style.display = 'block';
+  }
+}
+
+// Init autocomplete on both fields
+setupAutocomplete('villeDepart','acDep','dep');
+setupAutocomplete('villeArrivee','acArr','arr');
 
 // Reveal on scroll
 const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target);}});},{threshold:.1});
