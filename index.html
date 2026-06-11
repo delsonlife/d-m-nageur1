@@ -6,27 +6,57 @@
     <title>Widget Toiture</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; 
-            background: #f5f7fb; 
-            min-height: 100vh;
-        }
-        /* Essayons plusieurs IDs courants que le widget pourrait chercher */
-        #widget, #roof-widget, #toiture-widget, .widget-container {
+        body { background: #f0f2f5; min-height: 100vh; }
+        /* On s'assure que tous les conteneurs potentiels existent */
+        #app, #root, #widget, #widget-root, 
+        #roof-widget, #toiture-widget, #toiture-root,
+        .widget-container, .roof-container { 
             width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
+            min-height: 400px;
         }
     </style>
 </head>
 <body>
-    <!-- Ajout de plusieurs conteneurs possibles (le widget cherche sûrement l'un d'eux) -->
+    <!-- Tous les IDs possibles que le widget pourrait chercher -->
+    <div id="app"></div>
+    <div id="root"></div>
     <div id="widget"></div>
+    <div id="widget-root"></div>
     <div id="roof-widget"></div>
     <div id="toiture-widget"></div>
+    <div id="toiture-root"></div>
     <div class="widget-container"></div>
-    <div id="root"></div>
+    <div class="roof-container"></div>
     
+    <!-- Solution de secours : on crée un élément au cas où -->
+    <div id="dynamic-container" style="width:100%; min-height:500px;"></div>
+    
+    <script>
+        // On attend que le DOM soit chargé
+        document.addEventListener('DOMContentLoaded', function() {
+            // On essaye de créer un élément par défaut si rien n'existe
+            if (document.body.children.length <= 10) {
+                const defaultContainer = document.createElement('div');
+                defaultContainer.id = 'default-widget-container';
+                defaultContainer.style.minHeight = '500px';
+                document.body.appendChild(defaultContainer);
+            }
+        });
+    </script>
+    
+    <!-- Le widget se charge en dernier -->
     <script src="https://toiture-one.vercel.app/widget.js?license=ABC123"></script>
+    
+    <!-- Dernier recours : on force un rechargement si erreur -->
+    <script>
+        setTimeout(function() {
+            if (document.body.innerText.includes('error') || document.body.children.length < 2) {
+                console.log('Tentative de rechargement...');
+                // Certains widgets ont une fonction init
+                if (typeof window.init === 'function') window.init();
+                if (typeof window.RoofWidget === 'function') new window.RoofWidget();
+            }
+        }, 2000);
+    </script>
 </body>
 </html>
