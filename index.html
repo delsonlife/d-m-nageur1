@@ -2,70 +2,331 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devis Toiture Gratuit | Couverture Paris Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Couverture Paris Pro - Devis Toiture Gratuit</title>
+    <meta name="description" content="Estimation gratuite et instantanée pour vos travaux de toiture à Paris et Île-de-France">
+    <link rel="stylesheet" href="/widget.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
             min-height: 100vh;
+            padding: 0;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #ff6b00;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+
+        /* Hero section */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 60px 20px 40px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(255,107,0,0.2);
+            color: #ff6b00;
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            border: 1px solid rgba(255,107,0,0.3);
+        }
+
+        .hero h2 {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .hero h2 span {
+            color: #ff6b00;
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 32px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-stats {
             display: flex;
             justify-content: center;
-            align-items: center;
+            gap: 32px;
+            flex-wrap: wrap;
         }
-        .container {
+
+        .stat {
             text-align: center;
-            padding: 48px 32px;
-            background: white;
-            border-radius: 32px;
-            max-width: 550px;
-            margin: 20px;
-            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
         }
-        h1 {
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
             color: #ff6b00;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+        }
+
+        /* Widget section */
+        .widget-section {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Features */
+        .features {
+            max-width: 1000px;
+            margin: 60px auto 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            padding: 20px;
+        }
+
+        .feature {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            padding: 28px 20px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255,107,0,0.3);
+        }
+
+        .feature-icon {
+            font-size: 40px;
             margin-bottom: 16px;
-            font-size: 1.9rem;
         }
-        .subtitle {
-            color: #1e293b;
-            font-size: 1.1rem;
-            margin-bottom: 12px;
+
+        .feature h3 {
+            color: white;
+            margin-bottom: 10px;
+            font-size: 18px;
         }
-        p {
-            color: #475569;
-            line-height: 1.6;
-            margin-bottom: 24px;
+
+        .feature p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            line-height: 1.5;
         }
-        .info-box {
-            background: #fff7ed;
-            border-left: 4px solid #ff6b00;
-            padding: 16px 20px;
-            border-radius: 16px;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #78350f;
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: rgba(255,255,255,0.5);
+            font-size: 13px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            margin-top: 40px;
         }
-        .emoji-big {
-            font-size: 48px;
-            margin-bottom: 16px;
+
+        /* Bouton flottant */
+        .floating-trigger {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #ff6b00;
+            color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255,107,0,0.4);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 999;
+            font-size: 28px;
+            border: none;
+        }
+
+        .floating-trigger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(255,107,0,0.5);
+        }
+
+        /* Modal pour le widget */
+        .widget-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .widget-modal.active {
+            display: flex;
+        }
+
+        .widget-modal-content {
+            max-width: 650px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 24px;
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 32px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        @media (max-width: 640px) {
+            .hero h2 { font-size: 32px; }
+            .hero { padding: 40px 20px 20px; }
+            .widget-section { padding: 16px; }
+            .feature { padding: 20px; }
+            .floating-trigger { bottom: 20px; right: 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="emoji-big">🏠</div>
-        <h1>Couverture Paris Pro</h1>
-        <div class="subtitle">Devis toiture <strong>gratuit & sans engagement</strong></div>
-        <p>Réponse sous 24h • Artisans certifiés • Prix transparents</p>
-        <div class="info-box">
-            💡 <strong>Cliquez sur le bouton orange</strong> en bas à droite de l'écran<br>
-            Répondez à quelques questions → Recevez votre estimation
+
+    <div class="header">
+        <h1>🏠 Couverture Paris Pro</h1>
+        <p>Artisans couvreurs certifiés • Intervention rapide • Prix transparents</p>
+    </div>
+
+    <div class="hero">
+        <div class="hero-badge">✨ Estimation gratuite & sans engagement</div>
+        <h2>Devis toiture <span>en 2 minutes</span></h2>
+        <p>Obtenez une estimation précise de vos travaux de toiture. Réponse sous 24h.</p>
+        <div class="hero-stats">
+            <div class="stat">
+                <div class="stat-number">500+</div>
+                <div class="stat-label">Projets réalisés</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">4.9/5</div>
+                <div class="stat-label">Avis clients</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">24h</div>
+                <div class="stat-label">Réponse garantie</div>
+            </div>
         </div>
     </div>
 
-    <!-- Widget de devis toiture -->
-    <script src="https://toiture-one.vercel.app/widget.js?license=ABC123"></script>
+    <div class="features">
+        <div class="feature">
+            <div class="feature-icon">⚡</div>
+            <h3>Rapide & Simple</h3>
+            <p>Répondez à 8 questions simples et obtenez votre estimation immédiatement</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">📊</div>
+            <h3>Estimation Précise</h3>
+            <p>Basée sur les prix réels du marché et les spécificités de votre projet</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🔒</div>
+            <h3>Gratuit & Sans Engagement</h3>
+            <p>Service totalement gratuit, aucune obligation d'achat</p>
+        </div>
+        <div class="feature">
+            <div class="feature-icon">🏆</div>
+            <h3>Artisans Certifiés</h3>
+            <p>Qualifiés RGE et assurés pour tous vos travaux</p>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2024 Couverture Paris Pro - Devis toiture gratuit pour Paris et Île-de-France</p>
+        <p style="margin-top: 8px;">🔨 Artisan couvreur depuis plus de 10 ans à votre service</p>
+    </footer>
+
+    <!-- Bouton flottant -->
+    <button class="floating-trigger" id="widget-trigger">
+        💬
+    </button>
+
+    <!-- Modal widget -->
+    <div class="widget-modal" id="widget-modal">
+        <button class="close-modal" id="close-modal">✕</button>
+        <div class="widget-modal-content">
+            <div id="roof-widget-container"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <link rel="stylesheet" href="https://roof-widget.vercel.app/widget.css">
+    <script src="https://roof-widget.vercel.app/widget.js?license=DMP2024"></script>
+    
+    <script>
+        const trigger = document.getElementById('widget-trigger');
+        const modal = document.getElementById('widget-modal');
+        const closeBtn = document.getElementById('close-modal');
+
+        trigger.addEventListener('click', () => {
+            modal.classList.add('active');
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+        });
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
