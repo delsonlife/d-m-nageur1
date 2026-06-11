@@ -5,25 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Widget Toiture</title>
     <style>
-        body { font-family: system-ui; padding: 20px; background: #f0f2f5; }
-        #widget-container { min-height: 200px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: system-ui, -apple-system, 'Segoe UI', sans-serif; 
+            background: #f5f7fb; 
+            min-height: 100vh;
+        }
+        /* Essayons plusieurs IDs courants que le widget pourrait chercher */
+        #widget, #roof-widget, #toiture-widget, .widget-container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
     </style>
 </head>
 <body>
-    <div id="widget-container"></div>
+    <!-- Ajout de plusieurs conteneurs possibles (le widget cherche sûrement l'un d'eux) -->
+    <div id="widget"></div>
+    <div id="roof-widget"></div>
+    <div id="toiture-widget"></div>
+    <div class="widget-container"></div>
+    <div id="root"></div>
     
     <script src="https://toiture-one.vercel.app/widget.js?license=ABC123"></script>
-    
-    <script>
-        // Si le widget expose une fonction d'initialisation, on essaye de l'appeler
-        window.addEventListener('load', function() {
-            if (typeof window.initWidget === 'function') {
-                window.initWidget({ container: '#widget-container' });
-            } else if (typeof window.startWidget === 'function') {
-                window.startWidget();
-            }
-            console.log('Script chargé, variables globales :', Object.keys(window).filter(k => k.toLowerCase().includes('widget')));
-        });
-    </script>
 </body>
 </html>
