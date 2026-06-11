@@ -1,37 +1,71 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Test Widget</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devis Toiture Gratuit | Couverture Paris Pro</title>
     <style>
-        body { font-family: system-ui; padding: 50px; text-align: center; }
-        #debug { margin-top: 30px; padding: 20px; background: #f0f0f0; border-radius: 10px; text-align: left; font-family: monospace; font-size: 12px; }
-        button { padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            text-align: center;
+            padding: 48px 32px;
+            background: white;
+            border-radius: 32px;
+            max-width: 550px;
+            margin: 20px;
+            box-shadow: 0 25px 45px rgba(0,0,0,0.3);
+        }
+        h1 {
+            color: #ff6b00;
+            margin-bottom: 16px;
+            font-size: 1.9rem;
+        }
+        .subtitle {
+            color: #1e293b;
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+        }
+        p {
+            color: #475569;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+        .info-box {
+            background: #fff7ed;
+            border-left: 4px solid #ff6b00;
+            padding: 16px 20px;
+            border-radius: 16px;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #78350f;
+        }
+        .emoji-big {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
     </style>
 </head>
 <body>
-    <h1>Test Widget Toiture</h1>
-    <button onclick="window.RoofWidget?.open?.()">Ouvrir manuellement</button>
-    <div id="debug"></div>
+    <div class="container">
+        <div class="emoji-big">🏠</div>
+        <h1>Couverture Paris Pro</h1>
+        <div class="subtitle">Devis toiture <strong>gratuit & sans engagement</strong></div>
+        <p>Réponse sous 24h • Artisans certifiés • Prix transparents</p>
+        <div class="info-box">
+            💡 <strong>Cliquez sur le bouton orange</strong> en bas à droite de l'écran<br>
+            Répondez à quelques questions → Recevez votre estimation
+        </div>
+    </div>
 
-    <script>
-        // Interception des erreurs
-        window.onerror = function(msg, url, line) {
-            document.getElementById('debug').innerHTML += `<div>❌ Erreur: ${msg} (ligne ${line})</div>`;
-        };
-        
-        // Vérifier si le widget charge
-        console.log("Chargement du widget...");
-        const script = document.createElement('script');
-        script.src = "https://toiture-one.vercel.app/widget.js?license=ABC123";
-        script.onload = () => {
-            document.getElementById('debug').innerHTML += '<div>✅ Widget chargé</div>';
-            document.getElementById('debug').innerHTML += '<div>📦 Objets disponibles: ' + Object.keys(window).filter(k => k.toLowerCase().includes('roof') || k.toLowerCase().includes('widget')).join(', ') || 'aucun' + '</div>';
-        };
-        script.onerror = () => {
-            document.getElementById('debug').innerHTML += '<div>❌ Impossible de charger widget.js</div>';
-        };
-        document.body.appendChild(script);
-    </script>
+    <!-- Widget de devis toiture -->
+    <script src="https://toiture-one.vercel.app/widget.js?license=ABC123"></script>
 </body>
 </html>
