@@ -1,51 +1,37 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Devis Toiture - Couvreur Expert</title>
+    <title>Test Widget</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Segoe UI', system-ui, sans-serif; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .container {
-            text-align: center;
-            padding: 40px;
-            background: white;
-            border-radius: 20px;
-            max-width: 600px;
-            margin: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-        }
-        h1 { color: #1e293b; margin-bottom: 20px; }
-        p { color: #64748b; margin-bottom: 30px; line-height: 1.6; }
-        .demo-note {
-            margin-top: 30px;
-            padding: 15px;
-            background: #f1f5f9;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #475569;
-        }
+        body { font-family: system-ui; padding: 50px; text-align: center; }
+        #debug { margin-top: 30px; padding: 20px; background: #f0f0f0; border-radius: 10px; text-align: left; font-family: monospace; font-size: 12px; }
+        button { padding: 12px 24px; background: #2563eb; color: white; border: none; border-radius: 8px; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🏠 Couverture Expert</h1>
-        <p>Devis toiture gratuit en 2 minutes<br>Posez les bonnes questions, obtenez une estimation précise</p>
-        <div class="demo-note">
-            💡 Le bouton flottant va apparaître en bas à droite<br>
-            Cliquez dessus pour lancer l'estimation
-        </div>
-    </div>
+    <h1>Test Widget Toiture</h1>
+    <button onclick="window.RoofWidget?.open?.()">Ouvrir manuellement</button>
+    <div id="debug"></div>
 
-    <!-- Widget - le bouton flottant apparaît automatiquement -->
-    <script src="https://toiture-one.vercel.app/widget.js?license=ABC123"></script>
+    <script>
+        // Interception des erreurs
+        window.onerror = function(msg, url, line) {
+            document.getElementById('debug').innerHTML += `<div>❌ Erreur: ${msg} (ligne ${line})</div>`;
+        };
+        
+        // Vérifier si le widget charge
+        console.log("Chargement du widget...");
+        const script = document.createElement('script');
+        script.src = "https://toiture-one.vercel.app/widget.js?license=ABC123";
+        script.onload = () => {
+            document.getElementById('debug').innerHTML += '<div>✅ Widget chargé</div>';
+            document.getElementById('debug').innerHTML += '<div>📦 Objets disponibles: ' + Object.keys(window).filter(k => k.toLowerCase().includes('roof') || k.toLowerCase().includes('widget')).join(', ') || 'aucun' + '</div>';
+        };
+        script.onerror = () => {
+            document.getElementById('debug').innerHTML += '<div>❌ Impossible de charger widget.js</div>';
+        };
+        document.body.appendChild(script);
+    </script>
 </body>
 </html>
